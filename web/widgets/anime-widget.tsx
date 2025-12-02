@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import { useApp } from "@modelcontextprotocol/ext-apps/react";
 
-import "../../index.css";
+import "../index.css";
 import { AnimeCard, type AnimeCardProps } from "../components/anime-card";
 
 function parseAnimeFromResult(result: unknown): AnimeCardProps | null {
