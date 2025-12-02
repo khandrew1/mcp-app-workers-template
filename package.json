@@ -6,7 +6,7 @@
     "deploy": "wrangler deploy --minify",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "format": "prettier --write .",
-    "web:build": "INPUT=anime-detail-widget.html vite build --config vite.config.ts"
+    "build": "INPUT=widgets/anime-detail-widget.html vite build --config vite.config.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "github:modelcontextprotocol/ext-apps",
