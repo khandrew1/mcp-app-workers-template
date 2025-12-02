@@ -4,49 +4,31 @@ import { useApp } from "@modelcontextprotocol/ext-apps/react";
 
 import "../index.css";
 import { AnimeCard, type AnimeCardProps } from "../components/anime-card";
+import type { AnimePayload, AnimeStructuredContent } from "../../types";
 
-function parseAnimeFromResult(result: unknown): AnimeCardProps | null {
-  if (!result || typeof result !== "object") return null;
-  const payload =
-    (result as { structuredContent?: unknown; anime?: unknown })
-      .structuredContent ?? result;
-  const anime = (payload as { anime?: unknown }).anime ?? payload;
+function toAnimeCardProps(anime: AnimePayload | null): AnimeCardProps | null {
+  if (!anime) return null;
 
-  if (!anime || typeof anime !== "object") return null;
-
-  const animeObj = anime as Record<string, unknown>;
+  const {
+    image_url,
+    title_english,
+    rating,
+    score,
+    synopsis,
+    year,
+    genres,
+    studios,
+  } = anime;
 
   return {
-    image_url:
-      typeof animeObj.image_url === "string"
-        ? animeObj.image_url
-        : undefined,
-    title_english:
-      typeof animeObj.title_english === "string"
-        ? animeObj.title_english
-        : undefined,
-    rating:
-      typeof animeObj.rating === "string" ? animeObj.rating : undefined,
-    score:
-      typeof animeObj.score === "number" ? animeObj.score : undefined,
-    synopsis:
-      typeof animeObj.synopsis === "string" ? animeObj.synopsis : undefined,
-    year:
-      typeof animeObj.year === "number"
-        ? animeObj.year
-        : animeObj.year === null
-          ? null
-          : undefined,
-    genres: Array.isArray(animeObj.genres)
-      ? (animeObj.genres.filter(
-          (genre): genre is string => typeof genre === "string",
-        ))
-      : undefined,
-    studios: Array.isArray(animeObj.studios)
-      ? (animeObj.studios.filter(
-          (studio): studio is string => typeof studio === "string",
-        ))
-      : undefined,
+    image_url: image_url ?? undefined,
+    title_english: title_english ?? undefined,
+    rating: rating ?? undefined,
+    score: score ?? undefined,
+    synopsis: synopsis ?? undefined,
+    year,
+    genres: genres.length ? genres : undefined,
+    studios: studios.length ? studios : undefined,
   };
 }
 
@@ -59,68 +41,42 @@ export default function AnimeWidget() {
   const [error, setError] = useState<string | null>(null);
   const [animeUrl, setAnimeUrl] = useState<string | null>(null);
 
-  const { app, isConnected, error: appError } = useApp({
+  const {
+    app,
+    isConnected,
+    error: appError,
+  } = useApp({
     appInfo: {
       name: "anime-detail-widget",
       version: "0.0.1",
     },
     capabilities: {},
     onAppCreated: (appInstance) => {
-      appInstance.ontoolinput = (params) => {
-        const incomingQuery = params.arguments?.query;
-        if (
-          typeof incomingQuery === "string" &&
-          incomingQuery.trim().length > 0
-        ) {
-          setQuery(incomingQuery);
-          setStatus("loading");
-          setError(null);
-        }
+      const handleQueryUpdate = ({
+        arguments: args,
+      }: {
+        arguments?: { query?: string };
+      }) => {
+        const incomingQuery = args?.query?.trim();
+        if (!incomingQuery) return;
+
+        setQuery(incomingQuery);
+        setStatus("loading");
+        setError(null);
       };
 
-      appInstance.ontoolinputpartial = (params) => {
-        const incomingQuery = params.arguments?.query;
-        if (
-          typeof incomingQuery === "string" &&
-          incomingQuery.trim().length > 0
-        ) {
-          setQuery(incomingQuery);
-          setStatus("loading");
-          setError(null);
-        }
-      };
+      appInstance.ontoolinput = (params) => handleQueryUpdate(params);
 
-      appInstance.ontoolresult = (params) => {
-        const animeCard = parseAnimeFromResult(params);
-        const payload =
-          params &&
-          typeof params === "object"
-            ? (params as { structuredContent?: unknown })
-            : null;
-        const structuredContent =
-          payload?.structuredContent &&
-          typeof payload.structuredContent === "object"
-            ? (payload.structuredContent as Record<string, unknown>)
-            : null;
-        const incomingQuery =
-          typeof structuredContent?.query === "string"
-            ? structuredContent.query
-            : undefined;
+      appInstance.ontoolinputpartial = (params) => handleQueryUpdate(params);
 
-        // Extract URL from structured content
-        const url =
-          structuredContent?.anime &&
-          typeof structuredContent.anime === "object"
-            ? (structuredContent.anime as Record<string, unknown>).url
-            : null;
-        if (typeof url === "string") {
-          setAnimeUrl(url);
-        }
+      appInstance.ontoolresult = ({ structuredContent }) => {
+        const { anime: animePayload, query: incomingQuery } =
+          structuredContent as AnimeStructuredContent;
 
-        if (incomingQuery) {
-          setQuery(incomingQuery);
-        }
+        setAnimeUrl(animePayload?.url ?? null);
+        setQuery(incomingQuery);
 
+        const animeCard = toAnimeCardProps(animePayload);
         if (animeCard) {
           setAnime(animeCard);
           setStatus("ready");
@@ -136,12 +92,10 @@ export default function AnimeWidget() {
   const handleOpenMyAnimeList = useCallback(() => {
     if (!app || !animeUrl) return;
 
-    app
-      .sendOpenLink({ url: animeUrl })
-      .catch(() => {
-        setStatus("error");
-        setError("Host rejected ui/open-link request.");
-      });
+    app.sendOpenLink({ url: animeUrl }).catch(() => {
+      setStatus("error");
+      setError("Host rejected ui/open-link request.");
+    });
   }, [app, animeUrl]);
 
   if (appError) {

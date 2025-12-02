@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import type { AnimePayload } from "../types.js";
 
 type AssetsBinding = {
   fetch: (request: Request | string) => Promise<Response>;
@@ -205,7 +206,7 @@ export function createMcpServer(assets?: AssetsBinding) {
 
         const firstResult = data.data[0];
 
-        const animePayload = {
+        const animePayload: AnimePayload = {
           image_url: firstResult.images?.jpg?.image_url || null,
           url: firstResult.url || null,
           title_english: firstResult.title_english || null,

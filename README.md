@@ -5,6 +5,7 @@ A production-ready template for building Model Context Protocol (MCP) servers on
 ## Overview
 
 This template provides a complete foundation for building MCP servers that expose:
+
 - **MCP Tools**: Server-side functions that can be called by MCP clients
 - **UI Widgets**: Interactive HTML widgets that can be rendered in MCP-compatible hosts
 - **Resource Handlers**: Dynamic resource endpoints that serve widget HTML with proper CSP configuration
@@ -31,17 +32,20 @@ The example implementation includes an anime search tool that queries the Jikan 
 ## Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/MCPJam/mcp-app-workers-template.git
    cd mcp-app-workers-template
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 3. **Generate Cloudflare Workers types**:
+
    ```bash
    npm run cf-typegen
    ```
@@ -53,17 +57,18 @@ The example implementation includes an anime search tool that queries the Jikan 
 ### Local Development
 
 1. **Build widgets** (required before running dev server):
+
    ```bash
    npm run build
    ```
 
 2. **Start the development server**:
+
    ```bash
    npm run dev
    ```
 
    This starts Wrangler's development server. The MCP endpoint will be available at `http://localhost:8787/mcp`.
-
 
 ### Building Widgets
 
@@ -74,6 +79,7 @@ npm run build
 ```
 
 The build process:
+
 - Compiles React/TypeScript components
 - Bundles all dependencies into a single file
 - Applies Tailwind CSS
@@ -90,16 +96,19 @@ INPUT=widgets/anime-detail-widget.html npm run build
 ### Deploy to Cloudflare Workers
 
 1. **Authenticate with Wrangler** (first time only):
+
    ```bash
    npx wrangler login
    ```
 
 2. **Build widgets**:
+
    ```bash
    npm run build
    ```
 
 3. **Deploy**:
+
    ```bash
    npm run deploy
    ```
@@ -200,6 +209,7 @@ server.registerTool(
 ## Adding New Widgets
 
 1. **Create widget HTML entry point** in `web/widgets/`:
+
    ```html
    <!doctype html>
    <html lang="en">
@@ -216,17 +226,20 @@ server.registerTool(
    ```
 
 2. **Create widget React component** in `web/widgets/`:
+
    ```typescript
    import { useApp } from "@modelcontextprotocol/ext-apps/react";
    // ... implement widget logic
    ```
 
 3. **Build the widget**:
+
    ```bash
    INPUT=widgets/my-widget.html npm run build
    ```
 
 4. **Register the widget** in `server/mcp.ts`:
+
    ```typescript
    registerWidget(server, assets, {
      name: "my-widget",
@@ -239,12 +252,16 @@ server.registerTool(
 
 5. **Link tool to widget** (optional):
    ```typescript
-   server.registerTool("my-tool", {
-     // ... config
-     _meta: {
-       "ui/resourceUri": "ui://widget/my-widget.html",
+   server.registerTool(
+     "my-tool",
+     {
+       // ... config
+       _meta: {
+         "ui/resourceUri": "ui://widget/my-widget.html",
+       },
      },
-   }, handler);
+     handler,
+   );
    ```
 
 ## Configuration
