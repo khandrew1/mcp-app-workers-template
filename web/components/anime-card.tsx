@@ -1,4 +1,10 @@
-import { CalendarDays, ExternalLink, Shield, Sparkles, Star } from "lucide-react";
+import {
+  CalendarDays,
+  ExternalLink,
+  Shield,
+  Sparkles,
+  Star,
+} from "lucide-react";
 import React from "react";
 
 import {
@@ -48,10 +54,7 @@ export function AnimeCard({
   className,
   onOpenMyAnimeList,
 }: AnimeCardProps) {
-  const studiosLine =
-    studios && studios.length > 0
-      ? studios.join(", ")
-      : null;
+  const studiosLine = studios && studios.length > 0 ? studios.join(", ") : null;
 
   return (
     <Card className={cn("w-full bg-card/80", className)}>
@@ -85,7 +88,9 @@ export function AnimeCard({
                 {title_english || "Anime Title"}
               </CardTitle>
               {studiosLine && (
-                <CardDescription className="text-xs">{studiosLine}</CardDescription>
+                <CardDescription className="text-xs">
+                  {studiosLine}
+                </CardDescription>
               )}
             </div>
           </div>

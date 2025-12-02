@@ -16,24 +16,24 @@ app.get("/", (c) =>
 
 app.get("/anime/search", async (c) => {
   const query = c.req.query("q");
-  
+
   if (!query) {
     return c.json({ error: "Query parameter 'q' is required" }, 400);
   }
 
   try {
     const response = await fetch(
-      `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&sfw=true`
+      `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&sfw=true`,
     );
 
     if (!response.ok) {
       return c.json(
         { error: `API request failed: ${response.statusText}` },
-        { status: response.status as 400 | 401 | 403 | 404 | 500 }
+        { status: response.status as 400 | 401 | 403 | 404 | 500 },
       );
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       data?: Array<{
         images?: {
           jpg?: {
@@ -72,8 +72,10 @@ app.get("/anime/search", async (c) => {
     return c.json(result);
   } catch (error) {
     return c.json(
-      { error: `Failed to fetch anime data: ${error instanceof Error ? error.message : "Unknown error"}` },
-      500
+      {
+        error: `Failed to fetch anime data: ${error instanceof Error ? error.message : "Unknown error"}`,
+      },
+      500,
     );
   }
 });

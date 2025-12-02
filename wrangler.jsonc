@@ -6,6 +6,6 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./web/dist",
-    "binding": "ASSETS"
-  }
+    "binding": "ASSETS",
+  },
 }
