@@ -4,6 +4,9 @@
   "main": "server/index.ts",
   "compatibility_date": "2025-12-01",
   "compatibility_flags": ["nodejs_compat"],
+  "build": {
+    "command": "npm run build"
+  },
   "assets": {
     "directory": "./web/dist",
     "binding": "ASSETS",
