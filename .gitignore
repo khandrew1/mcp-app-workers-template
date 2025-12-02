@@ -1,5 +1,5 @@
 # prod
-dist/
+web/dist/
 
 # dev
 .yarn/

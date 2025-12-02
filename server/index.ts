@@ -40,6 +40,7 @@ app.get("/anime/search", async (c) => {
             image_url?: string;
           };
         };
+        url?: string;
         title_english?: string;
         rating?: string;
         score?: number;
@@ -56,9 +57,9 @@ app.get("/anime/search", async (c) => {
 
     const firstResult = data.data[0];
 
-    // Extract the specified fields
     const result = {
       image_url: firstResult.images?.jpg?.image_url || null,
+      url: firstResult.url || null,
       title_english: firstResult.title_english || null,
       rating: firstResult.rating || null,
       score: firstResult.score || null,
