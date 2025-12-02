@@ -2,8 +2,8 @@ import { useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import { useApp } from "@modelcontextprotocol/ext-apps/react";
 
-import "../../index.css";
-import { AnimeCard, type AnimeCardProps } from "../anime-card";
+import "../index.css";
+import { AnimeCard, type AnimeCardProps } from "../components/anime-card";
 
 type ToolInputParams = {
   arguments?: Record<string, unknown>;
@@ -22,13 +22,17 @@ function parseAnimeFromResult(result: unknown): AnimeCardProps | null {
 
   return {
     image_url:
-      typeof animeObj.image_url === "string" ? animeObj.image_url : undefined,
+      typeof animeObj.image_url === "string"
+        ? animeObj.image_url
+        : undefined,
     title_english:
       typeof animeObj.title_english === "string"
         ? animeObj.title_english
         : undefined,
-    rating: typeof animeObj.rating === "string" ? animeObj.rating : undefined,
-    score: typeof animeObj.score === "number" ? animeObj.score : undefined,
+    rating:
+      typeof animeObj.rating === "string" ? animeObj.rating : undefined,
+    score:
+      typeof animeObj.score === "number" ? animeObj.score : undefined,
     synopsis:
       typeof animeObj.synopsis === "string" ? animeObj.synopsis : undefined,
     year:
@@ -38,14 +42,14 @@ function parseAnimeFromResult(result: unknown): AnimeCardProps | null {
           ? null
           : undefined,
     genres: Array.isArray(animeObj.genres)
-      ? animeObj.genres.filter(
+      ? (animeObj.genres.filter(
           (genre): genre is string => typeof genre === "string",
-        )
+        ))
       : undefined,
     studios: Array.isArray(animeObj.studios)
-      ? animeObj.studios.filter(
+      ? (animeObj.studios.filter(
           (studio): studio is string => typeof studio === "string",
-        )
+        ))
       : undefined,
   };
 }
@@ -59,11 +63,7 @@ export default function AnimeWidget() {
   const [error, setError] = useState<string | null>(null);
   const [animeUrl, setAnimeUrl] = useState<string | null>(null);
 
-  const {
-    app,
-    isConnected,
-    error: appError,
-  } = useApp({
+  const { app, isConnected, error: appError } = useApp({
     appInfo: {
       name: "anime-detail-widget",
       version: "0.0.1",
@@ -97,7 +97,8 @@ export default function AnimeWidget() {
       appInstance.ontoolresult = (params) => {
         const animeCard = parseAnimeFromResult(params);
         const payload =
-          params && typeof params === "object"
+          params &&
+          typeof params === "object"
             ? (params as { structuredContent?: unknown })
             : null;
         const structuredContent =
@@ -139,10 +140,12 @@ export default function AnimeWidget() {
   const handleOpenMyAnimeList = useCallback(() => {
     if (!app || !animeUrl) return;
 
-    app.sendOpenLink({ url: animeUrl }).catch(() => {
-      setStatus("error");
-      setError("Host rejected ui/open-link request.");
-    });
+    app
+      .sendOpenLink({ url: animeUrl })
+      .catch(() => {
+        setStatus("error");
+        setError("Host rejected ui/open-link request.");
+      });
   }, [app, animeUrl]);
 
   if (appError) {
