@@ -8,7 +8,7 @@
     "command": "npm run build"
   },
   "assets": {
-    "directory": "./web/dist",
+    "directory": "./web/dist/widgets",
     "binding": "ASSETS",
   },
 }
