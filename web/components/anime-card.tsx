@@ -134,7 +134,7 @@ export function AnimeCard({
           </div>
 
           {synopsis && (
-            <p className="text-sm leading-relaxed text-muted-foreground">
+            <p className="text-xs leading-relaxed text-muted-foreground">
               {synopsis}
             </p>
           )}
